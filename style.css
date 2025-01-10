@@ -1,0 +1,74 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1e1e2f, #4a4a70);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+header h1 {
+    font-size: 2rem;
+}
+header button {
+    padding: 10px 20px;
+    border: none;
+    background: #6c63ff;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+}
+header button:hover {
+    background: #5848e5;
+}
+form, table {
+    margin: 20px auto;
+    width: 100%;
+    max-width: 600px;
+    text-align: left;
+}
+form label {
+    display: block;
+    margin: 10px 0 5px;
+}
+form input, form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 5px;
+}
+form button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: #6c63ff;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+}
+form button:hover {
+    background: #5848e5;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+table, th, td {
+    border: 1px solid #fff;
+}
+th, td {
+    padding: 10px;
+    text-align: center;
+}
