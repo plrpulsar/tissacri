@@ -4,7 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TIS Sacrifice</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
+            color: #0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            font-size: 2rem;
+            color: #0f0;
+        }
+        header button {
+            padding: 10px 20px;
+            border: none;
+            background: #0f0;
+            color: #000;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        header button:hover {
+            background: #1f1;
+        }
+        form, table {
+            margin: 20px auto;
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+        }
+        form label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #0f0;
+        }
+        form input, form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            background-color: #000;
+            color: #0f0;
+        }
+        form button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #0f0;
+            color: #000;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        form button:hover {
+            background: #1f1;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            background-color: #000;
+        }
+        table, th, td {
+            border: 1px solid #0f0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            color: #0f0;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
 </head>
 <body>
@@ -50,11 +135,87 @@
                         <th>Amount</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody"></tbody>
+                <tbody id="tableBody">
+                </tbody>
             </table>
         </section>
     </div>
 
-    <script src="js/script.js"></script>
+    <script>
+        let web3;
+        const contractAddress = "0x990EEAbf7EedD47037445118CDDeC0b649f44613";
+        const contractABI = [
+            // Add the ABI JSON here
+        ];
+
+        async function loadWeb3() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                alert(Connected to: ${accounts[0]});
+            } else {
+                alert('MetaMask not found. Please install it.');
+            }
+        }
+
+        document.getElementById('connectWallet').addEventListener('click', loadWeb3);
+
+        document.getElementById('sacrificeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!web3) {
+                alert('Wallet not connected');
+                return;
+            }
+
+            const tokenAddress = document.getElementById('tokenSelect').value;
+            const amount = document.getElementById('amount').value;
+            const accounts = await web3.eth.getAccounts();
+
+            const contract = new web3.eth.Contract(contractABI, contractAddress);
+            try {
+                const tokenContract = new web3.eth.Contract([
+                    {
+                        "constant": false,
+                        "inputs": [
+                            { "name": "spender", "type": "address" },
+                            { "name": "amount", "type": "uint256" }
+                        ],
+                        "name": "approve",
+                        "outputs": [{ "name": "", "type": "bool" }],
+                        "type": "function"
+                    }
+                ], tokenAddress);
+
+                // Approve tokens for sacrifice
+                await tokenContract.methods.approve(contractAddress, web3.utils.toWei(amount)).send({ from: accounts[0] });
+
+                // Execute sacrifice
+                await contract.methods.sacrifice(tokenAddress, web3.utils.toWei(amount)).send({ from: accounts[0] });
+
+                alert('Sacrifice successful!');
+            } catch (error) {
+                console.error('Error during sacrifice:', error);
+                alert('Transaction failed. Check console for details.');
+            }
+        });
+
+        document.getElementById('claimTIS').addEventListener('click', async () => {
+            if (!web3) {
+                alert('Wallet not connected');
+                return;
+            }
+
+            const accounts = await web3.eth.getAccounts();
+            const contract = new web3.eth.Contract(contractABI, contractAddress);
+            try {
+                await contract.methods.claimTIS().send({ from: accounts[0] });
+                alert('TIS claimed successfully!');
+            } catch (error) {
+                console.error('Error during claim:', error);
+                alert('Claim failed. Check console for details.');
+            }
+        });
+    </script>
 </body>
 </html>
